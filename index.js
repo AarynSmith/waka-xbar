@@ -84,7 +84,9 @@ const keyReduce = (data, keyName) =>
     }, {});
 
 const formatEntries = (data) =>
-  Object.entries(data).map((v) => [v[0], sToDuration(v[1])]);
+  Object.entries(data)
+    .sort((a, b) => b[1] - a[1])
+    .map((v) => [v[0], sToDuration(v[1])]);
 
 const sToDuration = (s) => {
   if (s < 60) return `${Math.floor(s)} sec`;
