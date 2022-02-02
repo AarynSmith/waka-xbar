@@ -130,5 +130,34 @@ client
       });
   })
   .catch((err) => {
+    if (
+      err.response &&
+      err.response.data &&
+      err.response.data.error == "Unauthorized"
+    ) {
+      xbar([
+        {
+          text: ":warning: Invaild API Key",
+          href: "xbar://app.xbarapp.com/openPlugin?path=path/to/plugin",
+        },
+      ]);
+      process.exit(0);
+    }
+    if (err.code === "ENOTFOUND") {
+      xbar([
+        {
+          text: ":red_circle: Offline",
+          href: "xbar://app.xbarapp.com/openPlugin?path=path/to/plugin",
+        },
+      ]);
+      process.exit(0);
+    }
+    xbar([
+      {
+        text: `:warning: Error: ${err.code}`,
+        href: "xbar://app.xbarapp.com/openPlugin?path=path/to/plugin",
+      },
+    ]);
+
     console.error(err);
   });
