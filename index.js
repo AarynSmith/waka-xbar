@@ -101,13 +101,6 @@ client
     const languages = formatEntries(keyReduce(data.data, "languages"));
     const projects = formatEntries(keyReduce(data.data, "projects"));
 
-    console.error(
-      languages.map((v) => {
-        return { text: `${v[0]}: ${v[1]}` };
-      })
-    );
-    console.error(projects);
-
     XBARMsg[0].text = `:clock10: ${
       data.data[data.data.length - 1].grand_total.text
     }`;
