@@ -1,4 +1,4 @@
-#!/usr/bin/env /Users/aaryn/.nvm/versions/node/v14.18.0/bin/node
+#!/usr/bin/env /usr/local/bin/node
 
 // <xbar.title>WakaTime Tracker</xbar.title>
 // <xbar.version>v1.0</xbar.version>
