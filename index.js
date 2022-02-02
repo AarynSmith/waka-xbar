@@ -13,7 +13,7 @@
 import xbar, { separator } from "@sindresorhus/xbar";
 import axios from "axios";
 
-const WAKA_API = process.env.VAR_API_KEY;
+const WAKA_API = Buffer.from(process.env.VAR_API_KEY || "").toString("base64");
 if (!WAKA_API) {
   xbar([
     {
