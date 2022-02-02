@@ -1,0 +1,140 @@
+#!/usr/bin/env /Users/aaryn/.nvm/versions/node/v14.18.0/bin/node
+
+// <xbar.title>WakaTime Tracker</xbar.title>
+// <xbar.version>v1.0</xbar.version>
+// <xbar.author>Aaryn Smith</xbar.author>
+// <xbar.author.github>aarynsmith</xbar.author.github>
+// <xbar.desc>Gets informatiopn about your Wakatime Statistics</xbar.desc>
+// <xbar.dependencies></xbar.dependencies>
+
+// <xbar.var>string(VAR_API_KEY=""): API key to get access to remote data.</xbar.var>
+
+import xbar, { separator } from "@sindresorhus/xbar";
+import axios from "axios";
+
+const WAKA_API = process.env.VAR_API_KEY;
+if (!WAKA_API) {
+  xbar([
+    {
+      text: "API Key not defined",
+      href: "xbar://app.xbarapp.com/openPlugin?path=path/to/plugin",
+    },
+  ]);
+  process.exit(0);
+}
+
+const client = axios.create({
+  baseURL: "https://wakatime.com/api/v1/users/current/",
+  headers: {
+    Authorization: `Basic ${WAKA_API}`,
+  },
+});
+
+const stDate = new Date();
+stDate.setDate(stDate.getDate() - 6);
+const stDateStr = stDate.toISOString().substring(0, 10);
+const endDateStr = new Date().toISOString().substring(0, 10);
+
+const XBARMsg = [
+  {
+    text: `:clock10: WakaTime`,
+    dropdown: false,
+  },
+  separator,
+  {
+    text: `Last 7 days: No Data`,
+    href: "https://wakatime.com/dashboard/",
+  },
+  {
+    text: "Languages",
+    dropdown: true,
+    submenu: [
+      {
+        text: "No Data",
+      },
+    ],
+  },
+  {
+    text: "Projects",
+    dropdown: true,
+    submenu: [
+      {
+        text: "No Data",
+      },
+    ],
+  },
+  separator,
+  {
+    text: "All Time: No Data",
+    href: "https://wakatime.com/dashboard/",
+  },
+];
+
+const keyReduce = (data, keyName) =>
+  data
+    .flatMap((v) =>
+      v[keyName].map((v) => {
+        return { name: v.name, time: v.total_seconds };
+      })
+    )
+    .reduce((p, c) => {
+      p[c.name] = (p[c.name] || 0) + c.time;
+      return p;
+    }, {});
+
+const formatEntries = (data) =>
+  Object.entries(data).map((v) => [v[0], sToDuration(v[1])]);
+
+const sToDuration = (s) => {
+  if (s < 60) return `${Math.floor(s)} sec`;
+  const h = Math.floor(s / 3600);
+  s = s % 3600;
+  const m = Math.floor(s / 60);
+  return `${h} hrs ${m} mins`;
+};
+
+client
+  .get(`summaries/?start=${stDateStr}&end=${endDateStr}`)
+  .then((summary_data) => {
+    const data = summary_data.data;
+    const languages = formatEntries(keyReduce(data.data, "languages"));
+    const projects = formatEntries(keyReduce(data.data, "projects"));
+
+    console.error(
+      languages.map((v) => {
+        return { text: `${v[0]}: ${v[1]}` };
+      })
+    );
+    console.error(projects);
+
+    XBARMsg[0].text = `:clock10: ${
+      data.data[data.data.length - 1].grand_total.text
+    }`;
+    XBARMsg[2].text = `Last 7 Days: ${data.cummulative_total.text}`;
+    XBARMsg[3].submenu = languages.map((v) => {
+      return {
+        text: `${v[0]}: ${v[1]}`,
+        href: "https://wakatime.com/dashboard/",
+      };
+    });
+    XBARMsg[4].submenu = projects.map((v) => {
+      return {
+        text: `${v[0]}: ${v[1]}`,
+        href: `https://wakatime.com/projects/${v[0]}/`,
+      };
+    });
+
+    client
+      .get(`all_time_since_today`)
+      .then((resp) => {
+        console.error(resp.data.data.text);
+        XBARMsg[6].text = `All Time: ${resp.data.data.text}`;
+        xbar(XBARMsg);
+      })
+      .catch(() => {
+        xbar(XBARMsg);
+      });
+  })
+  .catch((err) => {
+    console.error(err);
+  });
