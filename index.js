@@ -5,9 +5,10 @@
 // <xbar.author>Aaryn Smith</xbar.author>
 // <xbar.author.github>aarynsmith</xbar.author.github>
 // <xbar.desc>Gets informatiopn about your Wakatime Statistics</xbar.desc>
-// <xbar.dependencies></xbar.dependencies>
+// <xbar.dependencies>node</xbar.dependencies>
 
-// <xbar.var>string(VAR_API_KEY=""): API key to get access to remote data.</xbar.var>
+// Variables:
+// <xbar.var>string(VAR_API_KEY=""): WAKATime API key. wakatime --config-read api_key</xbar.var>
 
 import xbar, { separator } from "@sindresorhus/xbar";
 import axios from "axios";
