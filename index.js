@@ -123,7 +123,6 @@ client
     client
       .get(`all_time_since_today`)
       .then((resp) => {
-        console.error(resp.data.data.text);
         XBARMsg[6].text = `All Time: ${resp.data.data.text}`;
         xbar(XBARMsg);
       })
