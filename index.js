@@ -12,6 +12,7 @@
 
 import xbar, { separator } from "@sindresorhus/xbar";
 import axios from "axios";
+import strftime from "strftime";
 
 const WAKA_API = Buffer.from(process.env.VAR_API_KEY || "").toString("base64");
 if (!WAKA_API) {
@@ -33,8 +34,8 @@ const client = axios.create({
 
 const stDate = new Date();
 stDate.setDate(stDate.getDate() - 6);
-const stDateStr = stDate.toISOString().substring(0, 10);
-const endDateStr = new Date().toISOString().substring(0, 10);
+const stDateStr = strftime("%F", stDate);
+const endDateStr = strftime("%F", new Date());
 
 const XBARMsg = [
   {

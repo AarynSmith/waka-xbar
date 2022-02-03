@@ -6,6 +6,7 @@
   "license": "MIT",
   "dependencies": {
     "@sindresorhus/xbar": "^2.0.0",
-    "axios": "^0.25.0"
+    "axios": "^0.25.0",
+    "strftime": "^0.10.1"
   }
 }
